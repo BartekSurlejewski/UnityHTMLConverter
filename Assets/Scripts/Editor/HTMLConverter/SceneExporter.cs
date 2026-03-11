@@ -29,7 +29,7 @@ namespace HTMLConverter
 
 			string sceneDataJson = JsonUtility.ToJson(sceneData, prettyPrint: true);
 			WriteExportFiles(exportFolderPath, sceneDataJson);
-			
+
 			Debug.Log($"[HTML Scene Exporter] Export finished. \nPath: {exportFolderPath}");
 		}
 
@@ -43,31 +43,52 @@ namespace HTMLConverter
 				Rotation = mainCamera.transform.rotation
 			};
 
-			HTMLCube[] htmlCubes = GameObject.FindObjectsByType<HTMLCube>(FindObjectsSortMode.None);
+			Transform[] sceneTransforms = GameObject.FindObjectsByType<Transform>(FindObjectsSortMode.None);
 
-			sceneData.Cubes = new List<CubeData>();
+			sceneData.SceneObjects = new List<SceneObjectData>();
 
-			for (int i = 0; i < htmlCubes.Length; i++)
+			for (int i = 0; i < sceneTransforms.Length; i++)
 			{
-				HTMLCube cube = htmlCubes[i];
-				HTMLCube parentCube = htmlCubes[i].transform.parent?.GetComponent<HTMLCube>();
+				Transform sceneTransform = sceneTransforms[i];
+				Transform parentTransform = sceneTransforms[i].transform.parent;
 				int parentIdex = -1;
 
-				if (parentCube)
+				if (parentTransform)
 				{
-					parentIdex = System.Array.IndexOf(htmlCubes, parentCube);
+					parentIdex = System.Array.IndexOf(sceneTransforms, parentTransform);
 				}
 
-				sceneData.Cubes.Add(new CubeData()
+				sceneData.SceneObjects.Add(new SceneObjectData()
 				{
+					Name = sceneTransform.name,
+					PrimitiveType = GetPrimitiveType(sceneTransform),
 					ParentIndex = parentIdex,
-					Position = cube.transform.localPosition,
-					Rotation = cube.transform.localEulerAngles,
-					Scale = cube.transform.localScale
+					Position = sceneTransform.localPosition,
+					Rotation = sceneTransform.localEulerAngles,
+					Scale = sceneTransform.localScale
 				});
 			}
 
 			return sceneData;
+
+			static HtmlPrimitiveType GetPrimitiveType(Transform sceneTransform)
+			{
+				MeshFilter meshFilter = sceneTransform.GetComponent<MeshFilter>();
+
+				if (!meshFilter || !meshFilter.sharedMesh)
+				{
+					return HtmlPrimitiveType.None;
+				}
+
+				Mesh cubePrimitiveMesh = HtmlConverterSettings.GetOrCreate().CubeMesh;
+
+				if (meshFilter.sharedMesh == cubePrimitiveMesh)
+				{
+					return HtmlPrimitiveType.Cube;
+				}
+
+				return HtmlPrimitiveType.None;
+			}
 		}
 
 		private static void WriteExportFiles(string exportFolderPath, string sceneDataJsonText)

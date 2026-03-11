@@ -1,4 +1,4 @@
-async function init() {
+function init() {
     const data = SCENE_DATA;
     const scene = new THREE.Scene();
 
@@ -26,39 +26,46 @@ async function init() {
 
     document.body.appendChild(renderer.domElement);
 
-    const cubes = [];
+    const sceneObjects = [];
 
-    for (let c of data.Cubes) {
+    for (let c of data.SceneObjects) {
 
-        const geo = new THREE.BoxGeometry(1, 1, 1);
-        const mat = new THREE.MeshNormalMaterial();
-        const cube = new THREE.Mesh(geo, mat);
+        let sceneObject;
 
-        cube.position.set(c.Position.x, c.Position.y, -c.Position.z);
+        if ((c.PrimitiveType == 0)) {   // Empty object
+            sceneObject = new THREE.Object3D();
+        }
+        if (c.PrimitiveType == 1) {   // A cube
+            const geo = new THREE.BoxGeometry(1, 1, 1);
+            const mat = new THREE.MeshNormalMaterial();
+            sceneObject = new THREE.Mesh(geo, mat);
+        }
 
-        cube.rotation.order = "YXZ";
-        cube.rotation.set(
+        sceneObject.name = c.Name;
+        sceneObject.position.set(c.Position.x, c.Position.y, -c.Position.z);
+        sceneObject.rotation.order = "YXZ";
+        sceneObject.rotation.set(
             THREE.MathUtils.degToRad(-c.Rotation.x),
             THREE.MathUtils.degToRad(-c.Rotation.y),
             THREE.MathUtils.degToRad(c.Rotation.z)
         );
 
-        cube.scale.order = "XYZ";
-        cube.scale.set(c.Scale.x, c.Scale.y, c.Scale.z);
+        sceneObject.scale.order = "XYZ";
+        sceneObject.scale.set(c.Scale.x, c.Scale.y, c.Scale.z);
 
-        cubes.push(cube);
+        sceneObjects.push(sceneObject);
     }
 
-    for (let i = 0; i < cubes.length; i++) {
-        const parentIndex = data.Cubes[i].ParentIndex;
+    for (let i = 0; i < sceneObjects.length; i++) {
+        const parentIndex = data.SceneObjects[i].ParentIndex;
 
         if (parentIndex !== -1) {
-            cubes[parentIndex].add(cubes[i]); // add to parent cube
+            sceneObjects[parentIndex].add(sceneObjects[i]); // add to parent object
         } else {
-            scene.add(cubes[i]);              // add to scene root
+            scene.add(sceneObjects[i]);              // add to scene root
         }
     }
-    
+
     renderer.render(scene, camera);
 }
 
