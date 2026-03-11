@@ -2,8 +2,7 @@
 A converter that extracts basic scene data from unity and generates HTML file for displaying the scene in web browser, using three.js.
 
 ## Features
-- camera export
-- cube hierarchy
+- camera and game objects hierarchy export
 - position, rotation and scale
 - HTML viewer using three.js
 
@@ -19,7 +18,18 @@ A converter that extracts basic scene data from unity and generates HTML file fo
 1. Open project in Unity
 2. Create a new scene and open it
 3. Make sure that the camera has "Main Camera" tag
-4. Place objects in world and attach HTMLCube component to them, or simply use HTMLCube prefab, located in Prefabs folder
+4. Place objects in world. For now only the objects with cube primitive mesh will be rendered in HTML export
 5. Tools -> Export To HTML5
 6. Select a destination folder
 7. Open generated index.html file in web browser (confirmed to work with Google Chrome, Microsoft Edge and Opera)
+
+## Known limitations/other info
+- html and js template files are found by hardcoded path. You can change the paths by modifying SceneExporter.cs
+- The tool is prone to bugs and crashes if template files are moved or changed
+- It's not designed to be performant, as it’s an editor tool, not meant to be used at runtime
+- Requires internet connection to access three.js source code
+- Scene data json is inserted into the html file’s body section
+- Camera needs to be tagged as main camera
+
+## Further development ideas
+- Add support for more web rendering engines, like Playcanvas
