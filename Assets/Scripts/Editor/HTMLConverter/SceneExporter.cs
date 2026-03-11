@@ -50,14 +50,21 @@ namespace HTMLConverter
 
 			if (!mainCamera)
 			{
-				throw new Exception("No main camera found in the scene");
+				Debug.LogWarning("[HTML Scene Exporter] No main camera found in scene. Adding default camera data");
+				sceneData.Camera = new CameraData()
+				{
+					Position = ToWebPosition(Vector3.zero),
+					Rotation = ToWebRotation(Quaternion.identity)
+				};
 			}
-
-			sceneData.Camera = new CameraData()
+			else
 			{
-				Position = ToWebPosition(mainCamera.transform.position),
-				Rotation = ToWebRotation(mainCamera.transform.rotation)
-			};
+				sceneData.Camera = new CameraData()
+				{
+					Position = ToWebPosition(mainCamera.transform.position),
+					Rotation = ToWebRotation(mainCamera.transform.rotation)
+				};
+			}
 
 			Transform[] sceneTransforms = GameObject.FindObjectsByType<Transform>(FindObjectsSortMode.None);
 
