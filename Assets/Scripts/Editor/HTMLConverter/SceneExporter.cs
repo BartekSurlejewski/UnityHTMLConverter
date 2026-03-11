@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
@@ -13,24 +14,33 @@ namespace HTMLConverter
 		[MenuItem("Tools/Export To HTML5")]
 		public static void Export()
 		{
-			Debug.Log("[HTML Scene Exporter] Export started");
-			string exportFolderPath = EditorUtility.OpenFolderPanel("Select path for HTML5 export", "", "");
-
-			if (string.IsNullOrEmpty(exportFolderPath))
+			try
 			{
-				Debug.LogError($"[HTML Scene Exporter] Invalid folder selected at path {exportFolderPath}");
+				Debug.Log("[HTML Scene Exporter] Export started");
+				string exportFolderPath = EditorUtility.OpenFolderPanel("Select path for HTML5 export", "", "");
 
-				return;
+				if (string.IsNullOrEmpty(exportFolderPath))
+				{
+					Debug.Log($"[HTML Scene Exporter] No export path selected, export cancelled.");
+
+					return;
+				}
+
+				Debug.Log($"[HTML Scene Exporter] Selected folder: {exportFolderPath}");
+
+				SceneData sceneData = GetSceneData();
+
+				string sceneDataJson = JsonUtility.ToJson(sceneData, prettyPrint: true);
+				WriteExportFiles(exportFolderPath, sceneDataJson);
+
+				Debug.Log($"[HTML Scene Exporter] Export finished. \nPath: {exportFolderPath}");
 			}
+			catch (Exception e)
+			{
+				Console.WriteLine(e);
 
-			Debug.Log($"[HTML Scene Exporter] Selected folder: {exportFolderPath}");
-
-			SceneData sceneData = GetSceneData();
-
-			string sceneDataJson = JsonUtility.ToJson(sceneData, prettyPrint: true);
-			WriteExportFiles(exportFolderPath, sceneDataJson);
-
-			Debug.Log($"[HTML Scene Exporter] Export finished. \nPath: {exportFolderPath}");
+				throw;
+			}
 		}
 
 		private static SceneData GetSceneData()
@@ -51,18 +61,18 @@ namespace HTMLConverter
 			{
 				Transform sceneTransform = sceneTransforms[i];
 				Transform parentTransform = sceneTransforms[i].transform.parent;
-				int parentIdex = -1;
+				int parentIndex = -1;
 
 				if (parentTransform)
 				{
-					parentIdex = System.Array.IndexOf(sceneTransforms, parentTransform);
+					parentIndex = System.Array.IndexOf(sceneTransforms, parentTransform);
 				}
 
 				sceneData.SceneObjects.Add(new SceneObjectData()
 				{
 					Name = sceneTransform.name,
 					PrimitiveType = GetPrimitiveType(sceneTransform),
-					ParentIndex = parentIdex,
+					ParentIndex = parentIndex,
 					Position = sceneTransform.localPosition,
 					Rotation = sceneTransform.localEulerAngles,
 					Scale = sceneTransform.localScale
@@ -102,15 +112,13 @@ namespace HTMLConverter
 
 			if (string.IsNullOrEmpty(htmlText) || string.IsNullOrEmpty(jsText))
 			{
-				Debug.LogError("[HTML Scene Exporter] Failed to read template files");
-
-				return;
+				throw new Exception($"Failed to read template files at path {htmlTemplatePath} and {jsTemplatePath}");
 			}
 
 			if (!htmlText.Contains("const SCENE_DATA = {}"))
 			{
-				Debug.LogWarning(
-					$"[HTML Scene Exporter] Invalid html template at path {htmlTemplatePath}. \nMissing 'const SCENE_DATA = {{}}' in body section.");
+				throw new Exception(
+					$"Invalid html template at path {htmlTemplatePath}. \nMissing 'const SCENE_DATA = {{}}' in body section.");
 			}
 
 			htmlText = htmlText.Replace("const SCENE_DATA = {}", $"const SCENE_DATA = {sceneDataJsonText}");
@@ -118,7 +126,6 @@ namespace HTMLConverter
 			File.WriteAllText(htmlOutputPath, htmlText);
 			File.WriteAllText(jsOutputPath, jsText);
 			EditorUtility.RevealInFinder(exportFolderPath);
-			AssetDatabase.Refresh();
 		}
 	}
 }
