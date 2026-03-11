@@ -8,8 +8,8 @@ namespace HTMLConverter
 	{
 		private const string SETTINGS_PATH = "Assets/Editor/Settings/HTML Converter Settings.asset";
 
-		public Mesh CubeMesh;
 		public WebRenderingApi WebRenderingApi = WebRenderingApi.ThreeJs;
+		public Mesh CubeMesh;
 
 		internal static HtmlConverterSettings GetOrCreate()
 		{
@@ -38,6 +38,7 @@ namespace HTMLConverter
 				guiHandler = _ =>
 				{
 					SerializedObject serializedObject = HtmlConverterSettings.GetSO();
+					EditorGUILayout.PropertyField(serializedObject.FindProperty("WebRenderingApi"));
 					EditorGUILayout.PropertyField(serializedObject.FindProperty("CubeMesh"));
 					serializedObject.ApplyModifiedProperties();
 				},
