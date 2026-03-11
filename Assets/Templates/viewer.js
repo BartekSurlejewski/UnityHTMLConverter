@@ -2,6 +2,11 @@ function init() {
     const data = SCENE_DATA;
     const scene = new THREE.Scene();
 
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+
+    document.body.appendChild(renderer.domElement);
+
     const camera = new THREE.PerspectiveCamera(
         60,
         window.innerWidth / window.innerHeight,
@@ -20,11 +25,6 @@ function init() {
         data.Camera.Rotation.z,
         data.Camera.Rotation.w
     );
-
-    const renderer = new THREE.WebGLRenderer();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-
-    document.body.appendChild(renderer.domElement);
 
     const sceneObjects = [];
 
@@ -67,6 +67,15 @@ function init() {
     }
 
     renderer.render(scene, camera);
+    window.addEventListener("resize", onWindowResize, false);
+
+    function onWindowResize() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.render(scene, camera);
+    }
 }
 
 init();
