@@ -12,13 +12,13 @@ function init() {
     camera.position.set(
         data.Camera.Position.x,
         data.Camera.Position.y,
-        -data.Camera.Position.z
+        data.Camera.Position.z
     );
     camera.quaternion.set(
         data.Camera.Rotation.x,
         data.Camera.Rotation.y,
-        -data.Camera.Rotation.z,
-        -data.Camera.Rotation.w
+        data.Camera.Rotation.z,
+        data.Camera.Rotation.w
     );
 
     const renderer = new THREE.WebGLRenderer();
@@ -42,11 +42,11 @@ function init() {
         }
 
         sceneObject.name = c.Name;
-        sceneObject.position.set(c.Position.x, c.Position.y, -c.Position.z);
+        sceneObject.position.set(c.Position.x, c.Position.y, c.Position.z);
         sceneObject.rotation.order = "YXZ";
         sceneObject.rotation.set(
-            THREE.MathUtils.degToRad(-c.Rotation.x),
-            THREE.MathUtils.degToRad(-c.Rotation.y),
+            THREE.MathUtils.degToRad(c.Rotation.x),
+            THREE.MathUtils.degToRad(c.Rotation.y),
             THREE.MathUtils.degToRad(c.Rotation.z)
         );
 

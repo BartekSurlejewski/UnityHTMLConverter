@@ -9,6 +9,7 @@ namespace HTMLConverter
 		private const string SETTINGS_PATH = "Assets/Editor/Settings/HTML Converter Settings.asset";
 
 		public Mesh CubeMesh;
+		public WebRenderingApi WebRenderingApi = WebRenderingApi.ThreeJs;
 
 		internal static HtmlConverterSettings GetOrCreate()
 		{
@@ -43,5 +44,10 @@ namespace HTMLConverter
 				keywords = new System.Collections.Generic.HashSet<string>(new[] { "HTML", "Converter" })
 			};
 		}
+	}
+
+	public enum WebRenderingApi
+	{
+		ThreeJs
 	}
 }
