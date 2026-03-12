@@ -14,6 +14,13 @@ function init() {
         1000
     );
 
+    const root = new THREE.Object3D();
+    root.name = "Scene Root";
+    root.position.set(0, 0, 0);
+    root.rotation.set(0, 0, 0);
+    root.scale.set(1, 1, -1);
+    scene.add(root);
+
     camera.position.set(
         data.Camera.Position.x,
         data.Camera.Position.y,
@@ -25,7 +32,8 @@ function init() {
         data.Camera.Rotation.z,
         data.Camera.Rotation.w
     );
-
+    camera.scale.set(1, 1, -1);
+    root.add(camera);
     const sceneObjects = [];
 
     for (let c of data.SceneObjects) {
@@ -49,10 +57,8 @@ function init() {
             THREE.MathUtils.degToRad(c.Rotation.y),
             THREE.MathUtils.degToRad(c.Rotation.z)
         );
-
         sceneObject.scale.order = "XYZ";
         sceneObject.scale.set(c.Scale.x, c.Scale.y, c.Scale.z);
-
         sceneObjects.push(sceneObject);
     }
 
@@ -62,7 +68,7 @@ function init() {
         if (parentIndex !== -1) {
             sceneObjects[parentIndex].add(sceneObjects[i]); // add to parent object
         } else {
-            scene.add(sceneObjects[i]);              // add to scene root
+            root.add(sceneObjects[i]);              // add to scene root
         }
     }
 

@@ -37,7 +37,7 @@ namespace HTMLConverter
 			}
 			catch (Exception e)
 			{
-				Console.WriteLine(e);
+				Debug.Log(e);
 
 				throw;
 			}
@@ -53,16 +53,16 @@ namespace HTMLConverter
 				Debug.LogWarning("[HTML Scene Exporter] No main camera found in scene. Adding default camera data");
 				sceneData.Camera = new CameraData()
 				{
-					Position = ToWebPosition(Vector3.zero),
-					Rotation = ToWebRotation(Quaternion.identity)
+					Position = Vector3.zero,
+					Rotation = Quaternion.identity
 				};
 			}
 			else
 			{
 				sceneData.Camera = new CameraData()
 				{
-					Position = ToWebPosition(mainCamera.transform.position),
-					Rotation = ToWebRotation(mainCamera.transform.rotation)
+					Position = mainCamera.transform.position,
+					Rotation = mainCamera.transform.rotation
 				};
 			}
 
@@ -86,8 +86,8 @@ namespace HTMLConverter
 					Name = sceneTransform.name,
 					PrimitiveType = GetPrimitiveType(sceneTransform),
 					ParentIndex = parentIndex,
-					Position = ToWebPosition(sceneTransform.localPosition),
-					Rotation = ToWebRotation(sceneTransform.localEulerAngles),
+					Position = sceneTransform.localPosition,
+					Rotation = sceneTransform.localEulerAngles,
 					Scale = sceneTransform.localScale
 				});
 			}
@@ -140,54 +140,5 @@ namespace HTMLConverter
 			File.WriteAllText(jsOutputPath, jsText);
 			EditorUtility.RevealInFinder(exportFolderPath);
 		}
-
-		#region Web rendering API dependent transformations
-
-		public static Vector3 ToWebPosition(Vector3 unityPosition)
-		{
-			WebRenderingApi currentRenderingApi = HtmlConverterSettings.GetOrCreate().WebRenderingApi;
-
-			if (currentRenderingApi == WebRenderingApi.ThreeJs)
-			{
-				return ToThreeJsPosition(unityPosition);
-			}
-
-			return unityPosition;
-
-			static Vector3 ToThreeJsPosition(Vector3 unityPosition) => new Vector3(unityPosition.x, unityPosition.y, -unityPosition.z);
-		}
-
-		public static Vector3 ToWebRotation(Vector3 unityEulerRotation)
-		{
-			WebRenderingApi currentRenderingApi = HtmlConverterSettings.GetOrCreate().WebRenderingApi;
-
-			if (currentRenderingApi == WebRenderingApi.ThreeJs)
-			{
-				return ToThreeJsRotation(unityEulerRotation);
-			}
-
-			return unityEulerRotation;
-
-			static Vector3 ToThreeJsRotation(Vector3 unityEulerRotation) =>
-				new Vector3(-unityEulerRotation.x, -unityEulerRotation.y, unityEulerRotation.z);
-		}
-
-		public static Quaternion ToWebRotation(Quaternion unityQuaternionRotation)
-		{
-			WebRenderingApi currentRenderingApi = HtmlConverterSettings.GetOrCreate().WebRenderingApi;
-
-			if (currentRenderingApi == WebRenderingApi.ThreeJs)
-			{
-				return ToThreeJsRotation(unityQuaternionRotation);
-			}
-
-			return unityQuaternionRotation;
-
-			static Quaternion ToThreeJsRotation(Quaternion unityQuaternionRotation) =>
-				new Quaternion(unityQuaternionRotation.x, unityQuaternionRotation.y, -unityQuaternionRotation.z,
-					-unityQuaternionRotation.w);
-		}
-
-		#endregion
 	}
 }
