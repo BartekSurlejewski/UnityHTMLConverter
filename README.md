@@ -24,6 +24,7 @@ A converter that extracts basic scene data from unity and generates HTML file fo
 7. Open generated index.html file in web browser (confirmed to work with Google Chrome, Microsoft Edge and Opera)
 
 ## Known limitations/other info
+- Currently it only displays cube primitives on html side
 - html and js template files are found by hardcoded path. You can change the paths by modifying SceneExporter.cs
 - The tool is prone to bugs and crashes if template files are moved or changed
 - It's not designed to be performant, as it’s an editor tool, not meant to be used at runtime
