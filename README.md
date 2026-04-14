@@ -32,5 +32,8 @@ A converter that extracts basic scene data from unity and generates HTML file fo
 - Scene data json is inserted into the html file’s body section
 - Camera needs to be tagged as main camera
 
-## Further development ideas
-- Add support for more web rendering engines, like Playcanvas
+  ## Demo scene in engine
+  <img width="1100" height="650" alt="image" src="https://github.com/user-attachments/assets/28882fed-7c8a-4b9b-9550-8ada551e3fee" />
+
+  ## Demo scene in web browser
+<img width="1736" height="905" alt="image" src="https://github.com/user-attachments/assets/b98933c3-2c9e-4de7-aa74-468096533d6c" />
